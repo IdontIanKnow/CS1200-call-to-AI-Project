@@ -1,0 +1,12 @@
+/src
+    main.cpp
+    api.cpp
+    api.h
+/ui
+    figma_exports/
+    qml/ (if using Qt Design Studio)
+/docs
+    wireframes/
+    requirements.md
+CMakeLists.txt
+README.md

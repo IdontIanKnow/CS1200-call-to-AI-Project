@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spoonacular AI Assistant</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        textarea { width: 100%; height: 100px; }
+        #response { margin-top: 20px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+<h1>Spoonacular AI Assistant</h1>
+
+<!-- Your SVG wireframe -->
+<img src="wireframe.svg" width="400">
+
+<h2>Ask the AI a question:</h2>
+<textarea id="userText"></textarea>
+<br><br>
+<button onclick="sendRequest()">Send</button>
+
+<div id="response"></div>
+
+<script>
+async function sendRequest() {
+    const text = document.getElementById("userText").value;
+
+    const res = await fetch("YOUR_RENDER_BACKEND_URL/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ text })
+    });
+
+    const data = await res.json();
+    document.getElementById("response").innerText =
+        data.answer || data.error || "No response";
+}
+</script>
+
+</body>
+</html>

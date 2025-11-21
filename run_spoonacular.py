@@ -7,17 +7,16 @@ if not api_key:
 
 url = "https://api.spoonacular.com/food/converse"
 
-payload = {
+params = {
     "text": "Give me a pasta recipe in 200 words or less.",
-    "context": "recipe assistance"
+    "context": "recipe assistance",
+    "apiKey": api_key,
 }
 
-params = {"apiKey": api_key}
-
 try:
-    response = requests.post(url, json=payload, params=params)
+    response = requests.get(url, params=params)
     response.raise_for_status()
     data = response.json()
-    print(data.get("answer", data))  # fallback to full data if "answer" is missing
+    print(data.get("answer", data))
 except requests.exceptions.RequestException as e:
     print("API request failed:", e)

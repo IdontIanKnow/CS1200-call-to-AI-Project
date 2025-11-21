@@ -26,7 +26,7 @@
 async function sendRequest() {
     const text = document.getElementById("userText").value;
 
-    const res = await fetch("YOUR_RENDER_BACKEND_URL/ask", {
+    const res = await fetch("https://cs1200-call-to-ai-project-1.onrender.com/ask", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ text })

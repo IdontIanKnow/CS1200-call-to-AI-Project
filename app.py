@@ -12,12 +12,15 @@ def ask():
     user_text = request.json.get("text", "")
 
     url = "https://api.spoonacular.com/food/converse"
+
     payload = {
         "text": user_text + " (Reply in under 200 words.)",
         "context": "recipe assistance"
     }
 
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json"
+    }
 
     try:
         response = requests.post(
@@ -25,12 +28,13 @@ def ask():
             json=payload,
             headers=headers
         )
+
         response.raise_for_status()
         data = response.json()
 
         answer = data.get("answer", "No answer returned.")
 
-        # enforce 200-word cap server-side
+        # enforce 200-word limit
         words = answer.split()
         if len(words) > 200:
             answer = " ".join(words[:200])

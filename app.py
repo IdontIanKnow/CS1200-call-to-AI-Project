@@ -19,12 +19,13 @@ def ask():
     }
 
     headers = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY
     }
 
     try:
         response = requests.post(
-            f"{url}?apiKey={API_KEY}",
+            url,
             json=payload,
             headers=headers
         )

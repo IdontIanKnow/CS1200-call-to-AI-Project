@@ -12,17 +12,31 @@ def ask():
     user_text = request.json.get("text", "")
 
     url = "https://api.spoonacular.com/food/converse"
-    params = {
-        "text": user_text,
-        "context": "recipe assistance",
-        "apiKey": API_KEY
+    payload = {
+        "text": user_text + " (Reply in under 200 words.)",
+        "context": "recipe assistance"
     }
 
+    headers = {"Content-Type": "application/json"}
+
     try:
-        response = requests.get(url, params=params)
+        response = requests.post(
+            f"{url}?apiKey={API_KEY}",
+            json=payload,
+            headers=headers
+        )
         response.raise_for_status()
         data = response.json()
-        return jsonify({"answer": data.get("answer", "No answer returned.")})
+
+        answer = data.get("answer", "No answer returned.")
+
+        # enforce 200-word cap server-side
+        words = answer.split()
+        if len(words) > 200:
+            answer = " ".join(words[:200])
+
+        return jsonify({"answer": answer})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

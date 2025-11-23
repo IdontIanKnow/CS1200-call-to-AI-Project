@@ -58,6 +58,8 @@
 
 <script>
 async function sendRequest() {
+    console.log("Button clicked!");
+    
     const text = document.getElementById("userText").value;
 
     const res = await fetch("https://cs1200-call-to-ai-project-1.onrender.com/ask", {

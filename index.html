@@ -67,6 +67,9 @@ async function sendRequest() {
     });
 
     const data = await res.json();
+
+    console.log(data);
+
     document.getElementById("response").innerText =
         data.answer || data.error || "No response";
 }

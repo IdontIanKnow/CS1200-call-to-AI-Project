@@ -3,19 +3,26 @@ from flask_cors import CORS
 import requests, os
 
 app = Flask(__name__)
-CORS(app, origins=["https://idontianknow.github.io"])
+CORS(app, origins=["https://idontianknow.github.io"])  # Your frontend URL
 
+# Get your Spoonacular API key from Render
 API_KEY = os.getenv("SPOONACULAR_KEY")
+
+if not API_KEY:
+    raise RuntimeError("Missing SPOONACULAR_KEY environment variable!")
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    user_text = request.json.get("text", "")
+    user_text = request.json.get("text", "").strip()
+    if not user_text:
+        return jsonify({"error": "No text provided"}), 400
 
-    url = "https://api.spoonacular.com/food/converse"
+    # Correct endpoint for generating recipe answers
+    url = "https://api.spoonacular.com/recipes/quickAnswer"
 
     params = {
-        "text": user_text + " (Reply in under 200 words.)",
-        "context": "recipe assistance",
+        "question": user_text,
+        "includeNutrition": False,
         "apiKey": API_KEY
     }
 
@@ -24,15 +31,18 @@ def ask():
         response.raise_for_status()
         data = response.json()
 
+        # Spoonacular returns 'answer' in the JSON
         answer = data.get("answer", "No answer returned.")
 
-        # enforce 200-word limit
+        # Enforce 200-word limit
         words = answer.split()
         if len(words) > 200:
             answer = " ".join(words[:200])
 
         return jsonify({"answer": answer})
 
+    except requests.exceptions.HTTPError as e:
+        return jsonify({"error": f"HTTP error: {e}"}), response.status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

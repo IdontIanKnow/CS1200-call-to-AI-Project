@@ -13,7 +13,6 @@ def ask():
 
     url = "https://api.spoonacular.com/food/converse"
 
-    # Use GET parameters — Spoonacular requires GET, not POST
     params = {
         "text": user_text + " (Reply in under 200 words.)",
         "context": "recipe assistance",
@@ -21,25 +20,21 @@ def ask():
     }
 
     try:
-    response = requests.get(url, params=params)
-    response.raise_for_status()
-    data = response.json()
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        data = response.json()
 
-    # DEBUG: log full response
-    print("Spoonacular raw response:", data)
+        answer = data.get("answer", "No answer returned.")
 
-    answer = data.get("answer", None)
-    if not answer:
-        answer = "No answer field in response."
+        # enforce 200-word limit
+        words = answer.split()
+        if len(words) > 200:
+            answer = " ".join(words[:200])
 
-    words = answer.split() if answer else []
-    if len(words) > 200:
-        answer = " ".join(words[:200])
+        return jsonify({"answer": answer})
 
-    return jsonify({"answer": answer, "raw": data})
-
-except Exception as e:
-    return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/")

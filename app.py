@@ -13,23 +13,15 @@ def ask():
 
     url = "https://api.spoonacular.com/food/converse"
 
-    payload = {
+    # Use GET parameters — Spoonacular requires GET, not POST
+    params = {
         "text": user_text + " (Reply in under 200 words.)",
-        "context": "recipe assistance"
-    }
-
-    headers = {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY
+        "context": "recipe assistance",
+        "apiKey": API_KEY
     }
 
     try:
-        response = requests.post(
-            url,
-            json=payload,
-            headers=headers
-        )
-
+        response = requests.get(url, params=params)
         response.raise_for_status()
         data = response.json()
 
@@ -44,6 +36,7 @@ def ask():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/")
 def home():

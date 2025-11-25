@@ -20,7 +20,7 @@ def ask():
     }
 
     payload = {
-        "model": "mixtral-8x7b-32768",
+        "model": "llama3-8b-8192",
         "messages": [
             {"role": "system", "content": "You are a helpful cooking assistant. Keep responses under 200 words."},
             {"role": "user", "content": user_text}
@@ -30,6 +30,7 @@ def ask():
 
     try:
         response = requests.post(url, headers=headers, json=payload)
+
         if response.status_code != 200:
             return jsonify({"error": response.text}), 500
 

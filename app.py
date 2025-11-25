@@ -22,7 +22,7 @@ def ask():
     payload = {
         "model": "mixtral-8x7b-32768",
         "messages": [
-            {"role": "system", "content": "You are a helpful cooking assistant. Keep recipes under 200 words."},
+            {"role": "system", "content": "You are a helpful cooking assistant. Keep responses under 200 words."},
             {"role": "user", "content": user_text}
         ],
         "max_tokens": 300
@@ -33,7 +33,6 @@ def ask():
         response.raise_for_status()
 
         data = response.json()
-
         answer = data["choices"][0]["message"]["content"]
 
         return jsonify({"answer": answer})

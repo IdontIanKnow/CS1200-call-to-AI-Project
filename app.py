@@ -10,6 +10,9 @@ GROQ_KEY = os.getenv("GROQ_API_KEY")
 
 @app.route("/ask", methods=["POST"])
 def ask():
+    if not GROQ_KEY:
+        return jsonify({"error": "GROQ_API_KEY is missing on the server"}), 500
+
     user_text = request.json.get("text", "")
 
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -20,10 +23,16 @@ def ask():
     }
 
     payload = {
-        "model": "llama3-8b-8192",
+        "model": "llama-3.1-8b-instant",
         "messages": [
-            {"role": "system", "content": "You are a helpful cooking assistant. Keep responses under 200 words."},
-            {"role": "user", "content": user_text}
+            {
+                "role": "system",
+                "content": "You are a helpful cooking assistant. Keep responses under 200 words."
+            },
+            {
+                "role": "user",
+                "content": user_text
+            }
         ],
         "max_tokens": 300
     }
@@ -31,12 +40,15 @@ def ask():
     try:
         response = requests.post(url, headers=headers, json=payload)
 
+        # If Groq returns any error (400, 422, etc.)
         if response.status_code != 200:
-            return jsonify({"error": response.text}), 500
+            return jsonify({
+                "error": f"Groq API error {response.status_code}",
+                "details": response.text
+            }), 500
 
         data = response.json()
         answer = data["choices"][0]["message"]["content"]
-
         return jsonify({"answer": answer})
 
     except Exception as e:

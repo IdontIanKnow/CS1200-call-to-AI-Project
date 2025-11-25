@@ -30,7 +30,8 @@ def ask():
 
     try:
         response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()
+        if response.status_code != 200:
+            return jsonify({"error": response.text}), 500
 
         data = response.json()
         answer = data["choices"][0]["message"]["content"]

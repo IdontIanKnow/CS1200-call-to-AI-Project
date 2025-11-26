@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Spoonacular AI App</title>
-
+    <title>Groq Recipe Assistant</title>
     <link rel="stylesheet" href="style.css" />
 
     <style>
-        /* Make the wireframe responsive */
+        /* Wireframe container */
         .wireframe-container {
             max-width: 400px;
             width: 100%;
@@ -17,17 +15,15 @@
             position: relative;
         }
 
-        /* Make wireframe image scale properly */
         #wireframe {
             width: 100%;
             height: auto;
             display: block;
         }
 
-        /* Textarea positioned over wireframe */
         #userText {
             position: absolute;
-            top: 55%; 
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 70%;
@@ -36,7 +32,6 @@
             font-size: 14px;
         }
 
-        /* Send button on wireframe */
         #sendBtn {
             position: absolute;
             bottom: 12%;
@@ -46,7 +41,6 @@
             font-size: 14px;
         }
 
-        /* Response box */
         #response {
             max-width: 400px;
             width: 90%;
@@ -60,19 +54,14 @@
             text-align: center;
         }
     </style>
-
 </head>
 <body>
 
-<h1>Spoonacular AI Assistant</h1>
+<h1>Groq Recipe Assistant</h1>
 
 <div class="wireframe-container">
     <img src="wireframe.svg" id="wireframe">
-
-    <!-- Text input area -->
-    <textarea id="userText" placeholder="Ask the AI..."></textarea>
-
-    <!-- Send button -->
+    <textarea id="userText" placeholder="Ask for a recipe..."></textarea>
     <button id="sendBtn" onclick="sendRequest()">Send</button>
 </div>
 
@@ -80,22 +69,28 @@
 
 <script>
 async function sendRequest() {
-    console.log("Button clicked!");
-    
     const text = document.getElementById("userText").value;
+    if (!text.trim()) {
+        alert("Please enter a question!");
+        return;
+    }
 
-    const res = await fetch("https://cs1200-call-to-ai-project.onrender.com/ask", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ text })
-});
+    document.getElementById("response").innerText = "Loading...";
 
-    const data = await res.json();
+    try {
+        const res = await fetch("https://cs1200-call-to-ai-project.onrender.com/ask", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ text })
+        });
 
-    console.log(data);
+        const data = await res.json();
 
-    document.getElementById("response").innerText =
-        data.answer || data.error || "No response";
+        document.getElementById("response").innerText =
+            data.answer || data.error || "No response";
+    } catch (err) {
+        document.getElementById("response").innerText = "Request failed: " + err;
+    }
 }
 </script>
 

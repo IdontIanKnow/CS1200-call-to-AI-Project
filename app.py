@@ -4,12 +4,9 @@ import os
 import requests
 
 app = Flask(__name__)
-CORS(app, origins=["https://idontianknow.github.io"])  # Your front-end URL
+CORS(app, origins=["https://idontianknow.github.io"])
 
-# Load Groq API key from environment variable
 GROQ_KEY = os.getenv("GROQ_API_KEY")
-if not GROQ_KEY:
-    raise RuntimeError("Missing GROQ_API_KEY environment variable")
 
 @app.route("/ask", methods=["POST"])
 def ask():
@@ -22,39 +19,31 @@ def ask():
         "Content-Type": "application/json"
     }
 
-    # Use a free, supported chat model
     payload = {
-        "model": "llama3.1-8b-instant",  # Works for all free accounts
+        "model": "llama3-70b-versatile",
         "messages": [
             {"role": "system", "content": "You are a helpful cooking assistant. Keep responses under 200 words."},
             {"role": "user", "content": user_text}
         ],
-        "max_tokens": 300
+        "max_completion_tokens": 300,
+        "temperature": 0.7
     }
 
     try:
         response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()
+        response.raise_for_status()  # Raise error for 4xx/5xx
         data = response.json()
 
-        # Extract the AI's reply
+        # Extract assistant reply
         answer = data["choices"][0]["message"]["content"]
-
-        # Enforce 200-word limit just in case
-        words = answer.split()
-        if len(words) > 200:
-            answer = " ".join(words[:200])
 
         return jsonify({"answer": answer})
 
     except requests.exceptions.RequestException as e:
-        return jsonify({"error": f"Groq request failed: {e}"}), 500
-    except KeyError:
-        return jsonify({"error": f"Unexpected response structure: {data}"}), 500
+        return jsonify({"error": f"Groq request failed: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/")
 def home():
     return "Backend is running with Groq!"
-
-if __name__ == "__main__":
-    app.run(debug=True)

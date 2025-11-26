@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Groq Recipe Assistant</title>
+
+    <title>Recipe AI Assistant</title>
+
     <link rel="stylesheet" href="style.css" />
 
     <style>
-        /* Wireframe container */
         .wireframe-container {
             max-width: 400px;
             width: 100%;
@@ -23,7 +24,7 @@
 
         #userText {
             position: absolute;
-            top: 55%;
+            top: 55%; 
             left: 50%;
             transform: translate(-50%, -50%);
             width: 70%;
@@ -57,11 +58,13 @@
 </head>
 <body>
 
-<h1>Groq Recipe Assistant</h1>
+<h1>Recipe AI Assistant</h1>
 
 <div class="wireframe-container">
     <img src="wireframe.svg" id="wireframe">
+
     <textarea id="userText" placeholder="Ask for a recipe..."></textarea>
+
     <button id="sendBtn" onclick="sendRequest()">Send</button>
 </div>
 
@@ -69,28 +72,22 @@
 
 <script>
 async function sendRequest() {
+    console.log("Button clicked!");
+    
     const text = document.getElementById("userText").value;
-    if (!text.trim()) {
-        alert("Please enter a question!");
-        return;
-    }
 
-    document.getElementById("response").innerText = "Loading...";
+    // Updated URL pointing to your Render backend
+    const res = await fetch("https://cs1200-call-to-ai-project.onrender.com/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+    });
 
-    try {
-        const res = await fetch("https://cs1200-call-to-ai-project.onrender.com/ask", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ text })
-        });
+    const data = await res.json();
+    console.log(data);
 
-        const data = await res.json();
-
-        document.getElementById("response").innerText =
-            data.answer || data.error || "No response";
-    } catch (err) {
-        document.getElementById("response").innerText = "Request failed: " + err;
-    }
+    document.getElementById("response").innerText =
+        data.answer || data.error || "No response";
 }
 </script>
 

@@ -20,7 +20,7 @@ def ask():
     }
 
     payload = {
-        "model": "llama3-8b",  # UPDATED MODEL NAME
+        "model": "llama3-70b-versatile",  # <-- WORKS ON ALL FREE ACCOUNTS
         "messages": [
             {"role": "system", "content": "You are a helpful cooking assistant. Keep responses under 200 words."},
             {"role": "user", "content": user_text}
@@ -31,13 +31,10 @@ def ask():
     try:
         response = requests.post(url, headers=headers, json=payload)
 
-        # If Groq returns an API error
         if response.status_code != 200:
             return jsonify({"error": response.text}), 500
 
         data = response.json()
-        
-        # Extract the chat response correctly
         answer = data["choices"][0]["message"]["content"]
 
         return jsonify({"answer": answer})
